@@ -1,0 +1,22 @@
+.markdown-active * {
+    margin: 0;
+}
+
+div.markdown-active-title {
+    white-space: normal !important;
+}
+
+.markdown-active ul, ol {
+    white-space: normal;
+}
+
+.markdown-active blockquote {
+    white-space: normal;
+    border-left: 4px solid #ccc;
+    padding-left: 16px;
+}
+
+.markdown-active a {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
