@@ -1,7 +1,37 @@
 const activeNoteSelector = '[contenteditable="true"]:not([aria-label]), .markdown-active, .markdown-active-title';
 
+chrome.storage.local.get(['markdownActive'], function (result) {
+    setTimeout(updatePreview, 1000, result.markdownActive);
+});
+
+chrome.runtime.onMessage.addListener((request) => {
+    if (request.command === 'updatePreview') {
+        updatePreview(request.markdownActive)
+    }
+});
+
+const observer = new MutationObserver(mutations => {
+
+    const newActiveNote = mutations.some(mutation =>
+        Array.from(mutation.addedNodes).some(node =>
+            node.nodeType === Node.ELEMENT_NODE &&
+            (node.matches(activeNoteSelector) || node.querySelector(activeNoteSelector))
+        )
+    );
+
+    chrome.storage.local.get(['markdownActive'], function (result) {
+        if (result.markdownActive && newActiveNote) {
+            setTimeout(updatePreview, 100, true);
+        }
+    });
+});
+
+observer.observe(document.body, {
+    childList: true,
+    subtree: true
+});
+
 function renderMarkdownToHtml(markdownText) {
-    // TODO: Input validation
     return marked.parse(markdownText);
 }
 
@@ -15,7 +45,7 @@ function updatePreview(markdownActive) {
 
         if (markdownActive) {
 
-            if (index === 1) {
+            if (isTitle(textBox)) {
                 textBox.classList.add('markdown-active-title');
             }
 
@@ -41,34 +71,21 @@ function updatePreview(markdownActive) {
     });
 }
 
-const observer = new MutationObserver(mutations => {
+function isTitle(elem) {
 
-    const newTextBoxDetected = mutations.some(mutation =>
-        Array.from(mutation.addedNodes).some(node =>
-            node.nodeType === Node.ELEMENT_NODE &&
-            (node.matches(activeNoteSelector) || node.querySelector(activeNoteSelector))
-        )
-    );
+    let parent = elem.parentElement;
 
-    chrome.storage.local.get(['markdownActive'], function (result) {
-        if (result.markdownActive && newTextBoxDetected) {
-            setTimeout(updatePreview, 100, true);
-        }
-    });
-});
-
-observer.observe(document.body, {
-    childList: true,
-    subtree: true
-});
-
-chrome.runtime.onMessage.addListener((request) => {
-    if (request.command === 'updatePreview') {
-        updatePreview(request.markdownActive)
+    if (!parent) {
+        return false;
     }
-});
 
-// Check markdown flag on page startup
-chrome.storage.local.get(['markdownActive'], function (result) {
-    setTimeout(updatePreview, 1000, result.markdownActive);
-});
+    let uncle = parent.nextElementSibling;
+
+    if (!uncle) {
+        return false;
+    }
+
+    let firstChild = uncle.firstElementChild;
+
+    return firstChild && firstChild.contentEditable === 'true';
+}

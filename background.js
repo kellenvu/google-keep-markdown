@@ -26,8 +26,11 @@ chrome.runtime.onMessage.addListener(function (request) {
 
 chrome.action.onClicked.addListener(function () {
     chrome.storage.local.get(['markdownActive'], function (result) {
+
         let markdownActive = !result.markdownActive;
+
         updateIcon(markdownActive);
+        
         chrome.storage.local.set({ markdownActive: markdownActive }, function () {
             chrome.tabs.query({ url: "*://keep.google.com/*" }, function (tabs) {
                 for (let tab of tabs) {

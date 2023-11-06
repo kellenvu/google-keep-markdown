@@ -6,8 +6,13 @@ div.markdown-active-title {
     white-space: normal !important;
 }
 
-.markdown-active ul, ol {
+.markdown-active ul,
+ol {
     white-space: normal;
+}
+
+.markdown-active li:has(> input[type="checkbox"]) {
+    list-style: none;
 }
 
 .markdown-active blockquote {
