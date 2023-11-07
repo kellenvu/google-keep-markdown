@@ -13,6 +13,7 @@ ol {
 
 .markdown-active li:has(> input[type="checkbox"]) {
     list-style: none;
+    margin-left: -17px;
 }
 
 .markdown-active blockquote {
