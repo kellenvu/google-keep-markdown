@@ -7,7 +7,7 @@
         "48": "assets/icon-48.png",
         "128": "assets/icon-128.png"
     },
-    "description": "Write and view Google Keep™ notes in Markdown.",
+    "description": "Write and view Google Keep notes in Markdown.",
     "action": {
         "default_icon": {
             "16": "assets/active-16.png",
