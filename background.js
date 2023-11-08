@@ -7,8 +7,7 @@ chrome.runtime.onStartup.addListener(() => {
 
 chrome.runtime.onInstalled.addListener(() => {
     chrome.storage.local.get(['markdownActive'], function (result) {
-        let markdownActive = result.markdownActive || false;
-        updateIcon(markdownActive);
+        updateIcon(result.markdownActive);
     });
 });
 
@@ -46,15 +45,15 @@ chrome.action.onClicked.addListener(() => {
 
 function updateIcon(markdownActive) {
     const iconPath = markdownActive ? {
-        "16": "assets/markdown-on-16.png",
-        "32": "assets/markdown-on-32.png",
-        "48": "assets/markdown-on-48.png",
-        "128": "assets/markdown-on-128.png"
+        "16": "assets/active-16.png",
+        "32": "assets/active-32.png",
+        "48": "assets/active-48.png",
+        "128": "assets/active-128.png"
     } : {
-        "16": "assets/markdown-off-16.png",
-        "32": "assets/markdown-off-32.png",
-        "48": "assets/markdown-off-48.png",
-        "128": "assets/markdown-off-128.png"
+        "16": "assets/inactive-16.png",
+        "32": "assets/inactive-32.png",
+        "48": "assets/inactive-48.png",
+        "128": "assets/inactive-128.png"
     };
     chrome.action.setIcon({
         path: iconPath,

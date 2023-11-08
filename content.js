@@ -14,11 +14,11 @@ chrome.runtime.onMessage.addListener(request => {
 
 const observer = new MutationObserver(mutations => {
 
-    const newActiveNote = mutations.some(mutation => {
-        Array.from(mutation.addedNodes).some(node => {
+    const newActiveNote = mutations.some(mutation =>
+        Array.from(mutation.addedNodes).some(node =>
             node.nodeType === Node.ELEMENT_NODE && (node.matches(activeNoteSelector) || node.querySelector(activeNoteSelector))
-        })
-    });
+        )
+    );
 
     chrome.storage.local.get(['markdownActive'], result => {
         if (result.markdownActive && newActiveNote) {
@@ -27,11 +27,18 @@ const observer = new MutationObserver(mutations => {
     });
 });
 
+observer.observe(document.body, {
+    childList: true,
+    subtree: true
+});
+
 function renderMarkdownToHtml(markdownText) {
     return marked.parse(markdownText);
 }
 
 function updatePreview(markdownActive) {
+
+    observer.disconnect();
 
     const textBoxes = document.querySelectorAll(activeNoteSelector);
 
@@ -57,6 +64,11 @@ function updatePreview(markdownActive) {
             textBox.classList.remove('markdown-active-title');
             textBox.classList.remove('markdown-active');
         }
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
     });
 }
 

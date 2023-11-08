@@ -1,13 +1,19 @@
 {
-    "name": "Markdown for Google Keep",
-    "description": "Write and view Google Keep notes in Markdown.",
+    "name": "Markdown for Google Keep™",
     "version": "1.0.0",
+    "icons": {
+        "16": "assets/icon-16.png",
+        "32": "assets/icon-32.png",
+        "48": "assets/icon-48.png",
+        "128": "assets/icon-128.png"
+    },
+    "description": "Write and view Google Keep™ notes in Markdown.",
     "action": {
         "default_icon": {
-            "16": "assets/markdown-on-16.png",
-            "32": "assets/markdown-on-32.png",
-            "48": "assets/markdown-on-48.png",
-            "128": "assets/markdown-on-128.png"
+            "16": "assets/active-16.png",
+            "32": "assets/active-32.png",
+            "48": "assets/active-48.png",
+            "128": "assets/active-128.png"
         }
     },
     "background": {
@@ -30,12 +36,6 @@
     "host_permissions": [
         "*://keep.google.com/*"
     ],
-    "icons": {
-        "16": "assets/icon-16.png",
-        "32": "assets/icon-32.png",
-        "48": "assets/icon-48.png",
-        "128": "assets/icon-128.png"
-    },
     "manifest_version": 3,
     "permissions": [
         "scripting",
