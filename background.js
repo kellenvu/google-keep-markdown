@@ -1,7 +1,6 @@
 chrome.runtime.onStartup.addListener(() => {
-    chrome.storage.local.get(['markdownActive'], function (result) {
-        let markdownActive = result.markdownActive || false;
-        updateIcon(markdownActive);
+    chrome.storage.local.get(['markdownActive'], function (result) {s
+        updateIcon(result.markdownActive);
     });
 });
 
