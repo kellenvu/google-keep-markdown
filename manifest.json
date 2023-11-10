@@ -17,7 +17,7 @@
         }
     },
     "background": {
-      "service_worker": "background.js"
+        "service_worker": "background.js"
     },
     "content_scripts": [
         {
@@ -39,5 +39,16 @@
     "manifest_version": 3,
     "permissions": [
         "storage"
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "assets/active-48.png",
+                "assets/inactive-48.png"
+            ],
+            "matches": [
+                "*://keep.google.com/*"
+            ]
+        }
     ]
 }

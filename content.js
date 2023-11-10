@@ -1,14 +1,16 @@
 const activeNoteSelector = '[contenteditable="true"]:not([aria-label="list item"]), .markdown-active, .markdown-active-title';
 
+injectCSS();
+
 window.onload = function () {
     chrome.storage.local.get(['markdownActive'], result => {
-        updatePreview(result.markdownActive);
+        updatePage(result.markdownActive);
     });
 };
 
 chrome.runtime.onMessage.addListener(request => {
-    if (request.command === 'updatePreview') {
-        updatePreview(request.markdownActive);
+    if (request.command === 'updatePage') {
+        updatePage(request.markdownActive);
     }
 });
 
@@ -20,11 +22,11 @@ const observer = new MutationObserver(mutations => {
         )
     );
 
-    chrome.storage.local.get(['markdownActive'], result => {
-        if (result.markdownActive && newActiveNote) {
-            setTimeout(updatePreview, 100, true);
-        }
-    });
+    if (newActiveNote) {
+        chrome.storage.local.get(['markdownActive'], result => {
+            setTimeout(updatePage, 100, result.markdownActive);
+        });
+    }
 });
 
 observer.observe(document.body, {
@@ -36,13 +38,15 @@ function renderMarkdownToHtml(markdownText) {
     return marked.parse(markdownText);
 }
 
-function updatePreview(markdownActive) {
+function updatePage(markdownActive) {
 
     observer.disconnect();
 
     const textBoxes = document.querySelectorAll(activeNoteSelector);
 
     textBoxes.forEach(textBox => {
+
+        updateMarkdownButton(textBox, markdownActive);
 
         if (markdownActive) {
 
@@ -72,23 +76,66 @@ function updatePreview(markdownActive) {
     });
 }
 
+function updateMarkdownButton(elem, markdownActive) {
+
+    let granduncle = elem.parentElement?.parentElement?.nextElementSibling;
+    if (!granduncle) {
+        return;
+    }
+
+    let toolbar = granduncle.querySelector('[role="toolbar"]');
+    if (!toolbar) {
+        return;
+    }
+
+    let markdownButton = toolbar.querySelector('.markdown-button-active, .markdown-button-inactive');
+    if (markdownButton) {
+        markdownButton.classList.remove(markdownActive ? 'markdown-button-inactive' : 'markdown-button-active');
+        markdownButton.classList.add(markdownActive ? 'markdown-button-active' : 'markdown-button-inactive');
+        return;
+    }
+
+    let remindMeButton = toolbar.querySelector('[aria-label="Remind me"]');
+    if (!remindMeButton) {
+        return;
+    }
+
+    markdownButton = remindMeButton.cloneNode(true);
+    markdownButton.classList.add(markdownActive ? 'markdown-button-active' : 'markdown-button-inactive');
+
+    markdownButton.addEventListener('click', () => {
+        chrome.runtime.sendMessage({
+            command: 'triggerAction',
+        });
+    });
+
+    remindMeButton.parentNode.insertBefore(markdownButton, remindMeButton);
+}
+
 function isTitle(elem) {
+    let uncle = elem.parentElement?.nextElementSibling;
+    return Array.from(uncle?.children || []).some(child => child.contentEditable === 'true');
+}
 
-    let parent = elem.parentElement;
-    if (!parent) {
-        return false;
-    }
+function injectCSS() {
 
-    let uncle = parent.nextElementSibling;
-    if (!uncle) {
-        return false;
-    }
+    let active = chrome.runtime.getURL('assets/active-48.png');
 
-    for (let child of uncle.children) {
-        if (child.contentEditable === 'true') {
-            return true;
+    let inactive = chrome.runtime.getURL('assets/inactive-48.png');
+
+    let styleSheet = document.createElement('style');
+
+    styleSheet.innerText = `
+        .markdown-button-active {
+            background-image: url('${active}') !important;
+            background-size: 15px;
         }
-    }
+        
+        .markdown-button-inactive {
+            background-image: url('${inactive}') !important;
+            background-size: 15px;
+        }
+    `;
 
-    return false;
+    document.head.appendChild(styleSheet);
 }

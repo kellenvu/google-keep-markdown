@@ -1,5 +1,5 @@
 chrome.runtime.onStartup.addListener(() => {
-    chrome.storage.local.get(['markdownActive'], function (result) {s
+    chrome.storage.local.get(['markdownActive'], function (result) {
         updateIcon(result.markdownActive);
     });
 });
@@ -11,36 +11,12 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.runtime.onMessage.addListener(request => {
-    if (request.command === "updateIcon") {
-        updateIcon(request.markdownActive);
+    if (request.command === "triggerAction") {
+        triggerAction();
     }
 });
 
-chrome.action.onClicked.addListener(() => {
-    chrome.storage.local.get(['markdownActive'], result => {
-
-        let markdownActive = !result.markdownActive;
-
-        updateIcon(markdownActive);
-        
-        chrome.storage.local.set({
-            markdownActive: markdownActive
-        }, () => {
-            chrome.tabs.query({
-                url: "*://keep.google.com/*",
-            }, tabs => {
-                for (let tab of tabs) {
-                    chrome.tabs.sendMessage(tab.id, {
-                        command: 'updatePreview',
-                        markdownActive: markdownActive,
-                    }).catch(error => {
-                        console.error(`Error sending message to tab ${tab.id}:`, error);
-                    });
-                }
-            });
-        });
-    });
-});
+chrome.action.onClicked.addListener(triggerAction);
 
 function updateIcon(markdownActive) {
     const iconPath = markdownActive ? {
@@ -56,5 +32,31 @@ function updateIcon(markdownActive) {
     };
     chrome.action.setIcon({
         path: iconPath,
+    });
+}
+
+function triggerAction() {
+    chrome.storage.local.get(['markdownActive'], result => {
+
+        let markdownActive = !result.markdownActive;
+
+        updateIcon(markdownActive);
+
+        chrome.storage.local.set({
+            markdownActive: markdownActive
+        }, () => {
+            chrome.tabs.query({
+                url: "*://keep.google.com/*",
+            }, tabs => {
+                for (let tab of tabs) {
+                    chrome.tabs.sendMessage(tab.id, {
+                        command: 'updatePage',
+                        markdownActive: markdownActive,
+                    }).catch(error => {
+                        console.error(`Error sending message to tab ${tab.id}:`, error);
+                    });
+                }
+            });
+        });
     });
 }
