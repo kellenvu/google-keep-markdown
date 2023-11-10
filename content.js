@@ -48,7 +48,7 @@ function updatePage(markdownActive) {
 
         updateMarkdownButton(textBox, markdownActive);
 
-        if (markdownActive) {
+        if (markdownActive && !textBox.classList.contains('markdown-active')) {
 
             if (isTitle(textBox)) {
                 textBox.classList.add('markdown-active-title');
@@ -58,7 +58,7 @@ function updatePage(markdownActive) {
             textBox.dataset.originalHtml = textBox.innerHTML;
             textBox.innerHTML = renderMarkdownToHtml(textBox.innerText);
             textBox.contentEditable = 'false';
-        } else {
+        } else if (!markdownActive && textBox.classList.contains('markdown-active')) {
 
             if (textBox.dataset.originalHtml) {
                 textBox.innerHTML = textBox.dataset.originalHtml;
