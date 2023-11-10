@@ -38,7 +38,6 @@
     ],
     "manifest_version": 3,
     "permissions": [
-        "scripting",
         "storage"
     ]
 }

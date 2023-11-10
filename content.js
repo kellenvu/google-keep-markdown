@@ -1,4 +1,4 @@
-const activeNoteSelector = '[contenteditable="true"]:not([aria-label]), .markdown-active, .markdown-active-title';
+const activeNoteSelector = '[contenteditable="true"]:not([aria-label="list item"]), .markdown-active, .markdown-active-title';
 
 window.onload = function () {
     chrome.storage.local.get(['markdownActive'], result => {
@@ -84,5 +84,11 @@ function isTitle(elem) {
         return false;
     }
 
-    return uncle.firstElementChild && uncle.firstElementChild.contentEditable === 'true';
+    for (let child of uncle.children) {
+        if (child.contentEditable === 'true') {
+            return true;
+        }
+    }
+
+    return false;
 }
