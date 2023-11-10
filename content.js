@@ -1,4 +1,4 @@
-const activeNoteSelector = '[contenteditable="true"]:not([aria-label="list item"]), .markdown-active';
+const activeNoteSelector = '[contenteditable="true"], .markdown-active';
 
 injectCSS();
 
@@ -34,41 +34,18 @@ observer.observe(document.body, {
     subtree: true
 });
 
-function renderMarkdownToHtml(markdownText) {
-    return marked.parse(markdownText);
-}
-
 function updatePage(markdownActive) {
 
     observer.disconnect();
 
     const textBoxes = document.querySelectorAll(activeNoteSelector);
 
-    textBoxes.forEach(textBox => {
-
-        updateMarkdownButton(textBox, markdownActive);
-
-        if (markdownActive && !textBox.classList.contains('markdown-active')) {
-
-            if (isTitle(textBox)) {
-                textBox.classList.add('markdown-active-title');
-            }
-
-            textBox.classList.add('markdown-active');
-            textBox.dataset.originalHtml = textBox.innerHTML;
-            textBox.innerHTML = renderMarkdownToHtml(textBox.innerText);
-            textBox.contentEditable = 'false';
-        } else if (!markdownActive && textBox.classList.contains('markdown-active')) {
-
-            if (textBox.dataset.originalHtml) {
-                textBox.innerHTML = textBox.dataset.originalHtml;
-            }
-
-            textBox.contentEditable = 'true';
-            textBox.classList.remove('markdown-active-title');
-            textBox.classList.remove('markdown-active');
-        }
-    });
+    Array.from(textBoxes)
+        .filter(textBox => !isTitle(textBox) && !isCheckbox(textBox))
+        .forEach(textBox => {
+            updateMarkdownButton(textBox, markdownActive);
+            updateTextBox(textBox, markdownActive);
+        });
 
     observer.observe(document.body, {
         childList: true,
@@ -76,24 +53,45 @@ function updatePage(markdownActive) {
     });
 }
 
-function updateMarkdownButton(elem, markdownActive) {
+function updateTextBox(textBox, markdownActive) {
 
-    let granduncle = elem.parentElement?.parentElement?.nextElementSibling;
-    if (!granduncle) {
-        return;
+    if (markdownActive && !textBox.classList.contains('markdown-active')) {
+        textBox.classList.add('markdown-active');
+        textBox.dataset.originalHtml = textBox.innerHTML;
+        textBox.innerHTML = marked.parse(textBox.innerText);
+        textBox.contentEditable = 'false';
     }
 
-    let toolbar = granduncle.querySelector('[role="toolbar"]');
+    if (!markdownActive && textBox.classList.contains('markdown-active')) {
+
+        if (textBox.dataset.originalHtml) {
+            textBox.innerHTML = textBox.dataset.originalHtml;
+        }
+
+        textBox.contentEditable = 'true';
+        textBox.classList.remove('markdown-active-title');
+        textBox.classList.remove('markdown-active');
+    }
+}
+
+function updateMarkdownButton(elem, markdownActive) {
+
+    let toolbar = elem.parentElement?.parentElement?.nextElementSibling.querySelector('[role="toolbar"]');
     if (!toolbar) {
         return;
     }
 
     let markdownButton = toolbar.querySelector('.markdown-button-active, .markdown-button-inactive');
-    if (markdownButton) {
-        markdownButton.classList.remove(markdownActive ? 'markdown-button-inactive' : 'markdown-button-active');
-        markdownButton.classList.add(markdownActive ? 'markdown-button-active' : 'markdown-button-inactive');
+    if (!markdownButton) {
+        createMarkdownButton(toolbar, markdownActive);
         return;
     }
+
+    markdownButton.classList.remove(markdownActive ? 'markdown-button-inactive' : 'markdown-button-active');
+    markdownButton.classList.add(markdownActive ? 'markdown-button-active' : 'markdown-button-inactive');
+}
+
+function createMarkdownButton(toolbar, markdownActive) {
 
     let remindMeButton = toolbar.querySelector('[aria-label="Remind me"]');
     if (!remindMeButton) {
@@ -113,36 +111,26 @@ function updateMarkdownButton(elem, markdownActive) {
 }
 
 function isTitle(elem) {
+    return elem.parentElement?.nextElementSibling?.querySelector('[contentEditable="true"], .markdown-active') ||
+        elem.nextElementSibling?.querySelector('[contentEditable="true"], .markdown-active')
+}
 
-    let uncle = elem.parentElement?.nextElementSibling;
-    if (uncle?.querySelector('[contentEditable="true"], .markdown-active')) {
-        return true;
-    }
-
-    let sibling = elem.nextElementSibling;
-    if (sibling?.querySelector('[contentEditable="true"], .markdown-active')) {
-        return true;
-    }
-
-    return false;
+function isCheckbox(elem) {
+    return elem.nextElementSibling?.querySelector('[role="button"]')
 }
 
 function injectCSS() {
-
-    let active = chrome.runtime.getURL('assets/active-48.png');
-
-    let inactive = chrome.runtime.getURL('assets/inactive-48.png');
 
     let styleSheet = document.createElement('style');
 
     styleSheet.innerText = `
         .markdown-button-active {
-            background-image: url('${active}') !important;
+            background-image: url('${chrome.runtime.getURL('assets/active-48.png')}') !important;
             background-size: 15px;
         }
         
         .markdown-button-inactive {
-            background-image: url('${inactive}') !important;
+            background-image: url('${chrome.runtime.getURL('assets/inactive-48.png')}') !important;
             background-size: 15px;
         }
     `;
