@@ -1,4 +1,4 @@
-const activeNoteSelector = '[contenteditable="true"]:not([aria-label="list item"]), .markdown-active, .markdown-active-title';
+const activeNoteSelector = '[contenteditable="true"]:not([aria-label="list item"]), .markdown-active';
 
 injectCSS();
 
@@ -113,8 +113,18 @@ function updateMarkdownButton(elem, markdownActive) {
 }
 
 function isTitle(elem) {
+
     let uncle = elem.parentElement?.nextElementSibling;
-    return Array.from(uncle?.children || []).some(child => child.contentEditable === 'true');
+    if (uncle?.querySelector('[contentEditable="true"], .markdown-active')) {
+        return true;
+    }
+
+    let nextSibling = elem.nextElementSibling;
+    if (nextSibling?.querySelector('[contentEditable="true"], .markdown-active')) {
+        return true;
+    }
+
+    return false;
 }
 
 function injectCSS() {
