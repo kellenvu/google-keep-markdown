@@ -119,8 +119,8 @@ function isTitle(elem) {
         return true;
     }
 
-    let nextSibling = elem.nextElementSibling;
-    if (nextSibling?.querySelector('[contentEditable="true"], .markdown-active')) {
+    let sibling = elem.nextElementSibling;
+    if (sibling?.querySelector('[contentEditable="true"], .markdown-active')) {
         return true;
     }
 
