@@ -75,12 +75,7 @@ function updateTextBox(textBox, markdownActive) {
 
 function updateMarkdownButton(elem, markdownActive) {
 
-    let grandUncle = elem.parentElement?.parentElement?.nextElementSibling
-    if (!grandUncle) {
-        return;
-    }
-
-    let toolbar = grandUncle.querySelector('[role="toolbar"]');
+    let toolbar = elem.parentElement?.parentElement?.nextElementSibling?.querySelector('[role="toolbar"]');
     if (!toolbar) {
         return;
     }
