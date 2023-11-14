@@ -69,14 +69,18 @@ function updateTextBox(textBox, markdownActive) {
         }
 
         textBox.contentEditable = 'true';
-        textBox.classList.remove('markdown-active-title');
         textBox.classList.remove('markdown-active');
     }
 }
 
 function updateMarkdownButton(elem, markdownActive) {
 
-    let toolbar = elem.parentElement?.parentElement?.nextElementSibling.querySelector('[role="toolbar"]');
+    let grandUncle = elem.parentElement?.parentElement?.nextElementSibling
+    if (!grandUncle) {
+        return;
+    }
+
+    let toolbar = grandUncle.querySelector('[role="toolbar"]');
     if (!toolbar) {
         return;
     }
