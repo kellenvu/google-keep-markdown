@@ -1,11 +1,11 @@
 chrome.runtime.onStartup.addListener(() => {
-    chrome.storage.local.get(['markdownActive'], function (result) {
+    chrome.storage.local.get(['markdownActive'], result => {
         updateIcon(result.markdownActive);
     });
 });
 
 chrome.runtime.onInstalled.addListener(() => {
-    chrome.storage.local.get(['markdownActive'], function (result) {
+    chrome.storage.local.get(['markdownActive'], result => {
         updateIcon(result.markdownActive);
     });
 });
