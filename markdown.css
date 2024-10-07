@@ -26,3 +26,25 @@ ol {
     cursor: pointer !important;
     pointer-events: auto !important;
 }
+
+.markdown-active pre {
+    background-color: #f1f2f4;
+    border: 1px solid #b9b9b9;
+    border-radius: 3px;
+    code {
+        display: block;
+        white-space: pre;
+        padding: 1em;    
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .markdown-active pre {
+        background-color: #333;
+        border: 1px solid #555;
+        code {
+            color: #f8f8f2;
+            background-color: #333;
+        }
+    }    
+}
