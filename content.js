@@ -60,7 +60,7 @@ function updateTextBox(textBox, markdownActive) {
     if (markdownActive && !textBox.classList.contains('markdown-active')) {
         textBox.classList.add('markdown-active');
         textBox.dataset.originalHtml = textBox.innerHTML;
-		var parsedContent = marked.parse(textBox.innerTextreplaceAll(']( ', ']('));
+		var parsedContent = marked.parse(textBox.innerText.replaceAll(']( ', ']('));
         textBox.innerHTML = parsedContent.replace(GOOGLE_KEEP_URL_PATTERN, '');
         textBox.contentEditable = 'false';
     }
