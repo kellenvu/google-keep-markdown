@@ -18,7 +18,14 @@ chrome.runtime.onMessage.addListener(request => {
 
 chrome.action.onClicked.addListener(triggerAction);
 
+/**
+ * Updates the browser action icon based on the current markdown state.
+ * 
+ * @param {boolean} markdownActive - Indicates whether markdown mode is active.
+ *        If true, the icon changes to the "active" icon set; otherwise, it changes to the "inactive" icon set.
+ */
 function updateIcon(markdownActive) {
+
     const iconPath = markdownActive ? {
         "16": "assets/active-16.png",
         "32": "assets/active-32.png",
@@ -30,11 +37,16 @@ function updateIcon(markdownActive) {
         "48": "assets/inactive-48.png",
         "128": "assets/inactive-128.png"
     };
+
     chrome.action.setIcon({
         path: iconPath,
     });
 }
 
+/**
+ * Toggles the markdown state across all relevant tabs, updates the icon, 
+ * and synchronizes the state in Chrome's local storage.
+ */
 function triggerAction() {
     chrome.storage.local.get(['markdownActive'], result => {
 

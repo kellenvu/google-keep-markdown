@@ -34,6 +34,10 @@ observer.observe(document.body, {
     subtree: true
 });
 
+/**
+ * Updates all relevant text boxes based on the current markdown state.
+ * @param {boolean} markdownActive - Whether markdown mode is active.
+ */
 function updatePage(markdownActive) {
 
     observer.disconnect();
@@ -53,6 +57,11 @@ function updatePage(markdownActive) {
     });
 }
 
+/**
+ * Updates a single text box to toggle markdown mode.
+ * @param {HTMLElement} textBox - The text box element to update.
+ * @param {boolean} markdownActive - Whether markdown mode is active.
+ */
 function updateTextBox(textBox, markdownActive) {
 
     if (markdownActive && !textBox.classList.contains('markdown-active')) {
@@ -73,6 +82,11 @@ function updateTextBox(textBox, markdownActive) {
     }
 }
 
+/**
+ * Updates the markdown button state in the toolbar.
+ * @param {HTMLElement} elem - The element containing the toolbar.
+ * @param {boolean} markdownActive - Whether markdown mode is active.
+ */
 function updateMarkdownButton(elem, markdownActive) {
 
     let toolbar = elem.parentElement?.parentElement?.nextElementSibling?.querySelector('[role="toolbar"]');
@@ -90,6 +104,11 @@ function updateMarkdownButton(elem, markdownActive) {
     markdownButton.classList.add(markdownActive ? 'markdown-button-active' : 'markdown-button-inactive');
 }
 
+/**
+ * Creates a new markdown button in the toolbar.
+ * @param {HTMLElement} toolbar - The toolbar element where the button will be added.
+ * @param {boolean} markdownActive - Whether markdown mode is active.
+ */
 function createMarkdownButton(toolbar, markdownActive) {
 
     let remindMeButton = toolbar.querySelector('[aria-label="Remind me"]');
@@ -109,15 +128,28 @@ function createMarkdownButton(toolbar, markdownActive) {
     remindMeButton.parentNode.insertBefore(markdownButton, remindMeButton);
 }
 
+/**
+ * Checks if an element is a title element.
+ * @param {HTMLElement} elem - The element to check.
+ * @return {boolean} True if the element is a title.
+ */
 function isTitle(elem) {
     return elem.parentElement?.nextElementSibling?.querySelector('[contentEditable="true"], .markdown-active') ||
         elem.nextElementSibling?.querySelector('[contentEditable="true"], .markdown-active')
 }
 
+/**
+ * Checks if an element is a checkbox.
+ * @param {HTMLElement} elem - The element to check.
+ * @return {boolean} True if the element is a checkbox.
+ */
 function isCheckbox(elem) {
     return elem.nextElementSibling?.querySelector('[role="button"]')
 }
 
+/**
+ * Injects CSS styles for the markdown buttons into the document.
+ */
 function injectCSS() {
 
     let styleSheet = document.createElement('style');
