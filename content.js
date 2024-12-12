@@ -1,4 +1,6 @@
 const activeNoteSelector = '[contenteditable="true"], .markdown-active';
+const GOOGLE_KEEP_URL_PATTERN = /https:\/\/keep\.google\.com\/(?:u\/0\/)?/g;
+
 
 injectCSS();
 
@@ -67,7 +69,8 @@ function updateTextBox(textBox, markdownActive) {
     if (markdownActive && !textBox.classList.contains('markdown-active')) {
         textBox.classList.add('markdown-active');
         textBox.dataset.originalHtml = textBox.innerHTML;
-        textBox.innerHTML = marked.parse(textBox.innerText);
+	var parsedContent = marked.parse(textBox.innerText.replaceAll(']( ', ']('));
+        textBox.innerHTML = parsedContent.replace(GOOGLE_KEEP_URL_PATTERN, '');
         textBox.contentEditable = 'false';
     }
 
